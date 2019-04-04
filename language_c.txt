@@ -1,0 +1,100 @@
+#关于前++和后++
+假设b=1；a=b++和a=++b，执行后a和b的值。
+第一个表达式执行后a=1,b=2;
+第二个表达式执行后a=2,b=2;
+后++所执行的操作时先对操作数执行++,然后返回原操作数的值。
+前++所执行的操作是先对操作数执行++，然后返回该操作数。
+
+#关于重载运算符
+重载运算符目的是简化程序，使之简单明了。
+例如定义复数类
+class Complex{
+	float rel;
+	float img;
+};
+Complex a(1,1),b(2,2);
+Complex c;
+c=a+b;//这样相比用成员来加减就简洁多了。
+如何实现重载运算符：
+方法1：用类成员函数来封装：
+class Complex{
+	float rel;
+	float img;
+	public:
+	Complex(float a=0,float b=0){
+		rel=a;
+		img=b;
+	}
+	Complex operator +(Complex &a){//用构造函数返回一个临时变量
+		Complex c;
+		c.rel=a.rel+rel;
+		c.img=a.img+img;
+		return c;
+	}
+	Complex &operator +(Complex &a){//返回类成员变量本身
+		rel=rel+a.rel;
+		img=img+a.img;
+		return *this;
+	}
+}
+方法2：用友元函数来实现：
+友元函数是在类中声明的全局函数。但是该成员函数可以存取类的成员变量，而不受public，private的权限影响。
+class Complex{
+	float rel;
+	float img;
+	public:
+	Complex(float a=0,float b=0){
+		rel=a;
+		img=b;
+	}
+	Complex operator +(Complex &a){//用构造函数返回一个临时变量
+		Complex c;
+		c.rel=a.rel+rel;
+		c.img=a.img+img;
+		return c;
+	}
+	Complex &operator +(Complex &a){//返回类成员变量本身
+		rel=rel+a.rel;
+		img=img+a.img;
+		return *this;
+	}
+	firend Complex operator -(Complex &a,Complex &b){//用友元函数来实现。但是友元函数不能返回类成员变量。而且操作数有两个
+		Complex c;
+		c.rel=a.rel+b.rel;
+		c.img=a.img+b.img;
+		return c;
+	}
+}
+用友元函数比类成员函数实现灵活，因为可以返回不一样的变量，比如序列化：
+class Complex{
+	float rel;
+	float img;
+	public:
+	Complex(float a=0,float b=0){
+		rel=a;
+		img=b;
+	}
+	Complex operator +(Complex &a){//用构造函数返回一个临时变量
+		Complex c;
+		c.rel=a.rel+rel;
+		c.img=a.img+img;
+		return c;
+	}
+	Complex &operator +(Complex &a){//返回类成员变量本身
+		rel=rel+a.rel;
+		img=img+a.img;
+		return *this;
+	}
+	firend Complex operator -(Complex &a,Complex &b){//用友元函数来实现。但是友元函数不能返回类成员变量。而且操作数有两个
+		Complex c;
+		c.rel=a.rel+b.rel;
+		c.img=a.img+b.img;
+		return c;
+	}
+	firend ostream & operator<<(ostream &os,Complex &a){//实现序列化
+		return os<<a.rel<<','<<a.img<<endl;
+	}
+}
+
+
+
